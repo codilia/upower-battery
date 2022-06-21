@@ -88,7 +88,7 @@ class Extension {
 		for (let i = 0; i < udevices.length; i++) {
 			const udevice = udevices[i];
 			if (udevice.kind in icons) {
-				if (udevice.state != UPower.DeviceState.UNKNOWN) {
+				if (udevice.state != UPower.DeviceState.UNKNOWN || udevice.native_path.includes("bluez")) {
 					const icon = icons[udevice.kind];
 					Log('Found device: ' + icon.icon + ' | ' + udevice.native_path);
 					devices.push({
@@ -114,6 +114,7 @@ class Extension {
 			}
 		}
 		this._proxies = newProxies;
+		devices.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : ((a.native_path > b.native_path) ? 1 : -1)));
 		return devices;
 	}
 
