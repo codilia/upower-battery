@@ -10,7 +10,7 @@ var IndicatorController = GObject.registerClass(
             this._labels = [];
             this._icons = [];
             this._menuItems = [];
-            this._prevDevicesSettings = [];
+            this._prevDevicesSettings;
         }
 
         refresh(devices) {

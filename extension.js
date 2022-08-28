@@ -48,13 +48,24 @@ class Extension {
 		var sender = 'org.freedesktop.UPower';
 		this._subIdAdd = this._dbusCon.signal_subscribe(sender, iname, 'DeviceAdded', null, null, 0, () => {
 			Log('Device added')
+			this._refresh();
 		});
 		this._subIdRem = this._dbusCon.signal_subscribe(sender, iname, 'DeviceRemoved', null, null, 0, () => {
 			Log('Device removed')
+			this._refresh();
 		});
 		this._once = MainLoop.timeout_add(10, () => {
+			this._refresh();
 			this._update();
 			return false;
+		});
+	}
+
+
+	_refresh() {
+		const devices = this._findDevices();
+		devices.forEach((device, index) => {
+			device.udevice.refresh_sync(null);
 		});
 	}
 
