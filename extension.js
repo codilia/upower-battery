@@ -48,26 +48,16 @@ class Extension {
 		var sender = 'org.freedesktop.UPower';
 		this._subIdAdd = this._dbusCon.signal_subscribe(sender, iname, 'DeviceAdded', null, null, 0, () => {
 			Log('Device added')
-			this._refresh();
 		});
 		this._subIdRem = this._dbusCon.signal_subscribe(sender, iname, 'DeviceRemoved', null, null, 0, () => {
 			Log('Device removed')
-			this._refresh();
 		});
 		this._once = MainLoop.timeout_add(10, () => {
-			this._refresh();
 			this._update();
 			return false;
 		});
 	}
-
-	_refresh() {
-		const devices = this._findDevices();
-		devices.forEach((device, index) => {
-			device.udevice.refresh_sync(null);
-		});
-	}
-
+f
 	_update() {
 		const devices = this._findDevices();
 		this._indicator.refresh(devices);
@@ -81,13 +71,19 @@ class Extension {
 		const icons = {};
 		icons[UPower.DeviceKind.MOUSE] = { icon: 'input-mouse-symbolic' };
 		icons[UPower.DeviceKind.KEYBOARD] = { icon: 'input-keyboard-symbolic' };
+		icons[UPower.DeviceKind.GAMING_INPUT] = { icon: 'input-gaming-symbolic' };
 		const devices = [];
 		const upowerClient = UPower.Client.new_full(null);
 		const udevices = upowerClient.get_devices();
 		const newProxies = {}
 		for (let i = 0; i < udevices.length; i++) {
+
 			const udevice = udevices[i];
+
 			if (udevice.kind in icons) {
+				
+				log("UPower: " + udevice.state)
+				log("UPower: " + udevice.native_path)
 				if (udevice.state != UPower.DeviceState.UNKNOWN || udevice.native_path.includes("bluez")) {
 					const icon = icons[udevice.kind];
 					Log('Found device: ' + icon.icon + ' | ' + udevice.native_path);
