@@ -42,7 +42,7 @@ class Extension {
 		Log('Enable');
 		this._indicator = new IndicatorController();
 		this._proxies = {};
-		Main.panel.addToStatusArea(this._uuid, this._indicator);
+		Main.panel.addToStatusArea(this._uuid, this._indicator, 3, 'right');
 
 		var iname = 'org.freedesktop.UPower';
 		var sender = 'org.freedesktop.UPower';
@@ -81,6 +81,7 @@ class Extension {
 		const icons = {};
 		icons[UPower.DeviceKind.MOUSE] = { icon: 'input-mouse-symbolic' };
 		icons[UPower.DeviceKind.KEYBOARD] = { icon: 'input-keyboard-symbolic' };
+		icons[UPower.DeviceKind.GAMING_INPUT] = { icon: 'input-gaming-symbolic' };
 		const devices = [];
 		const upowerClient = UPower.Client.new_full(null);
 		const udevices = upowerClient.get_devices();
