@@ -61,6 +61,7 @@ class Extension {
 		});
 	}
 
+
 	_refresh() {
 		const devices = this._findDevices();
 		devices.forEach((device, index) => {
@@ -88,7 +89,7 @@ class Extension {
 		const newProxies = {}
 		for (let i = 0; i < udevices.length; i++) {
 			const udevice = udevices[i];
-			if (udevice.kind in icons) {
+			if (udevice.kind in icons) {				
 				if (udevice.state != UPower.DeviceState.UNKNOWN || udevice.native_path.includes("bluez")) {
 					const icon = icons[udevice.kind];
 					Log('Found device: ' + icon.icon + ' | ' + udevice.native_path);
