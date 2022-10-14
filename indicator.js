@@ -65,11 +65,13 @@ var IndicatorController = GObject.registerClass(
         }
 
         _getBoxLabel() {
-            return new St.Label({
+            const label = new St.Label({
                 y_align: Clutter.ActorAlign.CENTER,
                 x_align: Clutter.ActorAlign.START,
                 style_class: 'upower-battery-label',
             });
+            label.get_clutter_text().ellipsize = 0;
+            return label;
         }
 
         _getBoxIcon(device) {
