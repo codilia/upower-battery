@@ -28,6 +28,10 @@ var Log = function (msg) {
 	}
 }
 
+var LogError = function (msg) {
+	log('[upower-battery] ' + msg);
+}
+
 class Extension {
 	constructor(uuid) {
 		this._uuid = uuid;
@@ -56,7 +60,6 @@ class Extension {
 		});
 		this._once = MainLoop.timeout_add(10, () => {
 			this._refresh();
-			this._update();
 			return false;
 		});
 	}
@@ -64,8 +67,13 @@ class Extension {
 	_refresh() {
 		const devices = this._findDevices();
 		devices.forEach((device, index) => {
-			device.udevice.refresh_sync(null);
+			try {
+				device.udevice.refresh_sync(null);
+			} catch (error) {
+				LogError('Error ' + error)
+			}
 		});
+		this._update();
 	}
 
 	_update() {
