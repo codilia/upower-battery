@@ -4,7 +4,8 @@
   "name": "UPower Battery",
   "shell-version": [
     "42",
-    "43"
+    "43",
+    "44"
   ],
   "url": "https://github.com/codilia/upower-battery",
   "uuid": "upower-battery@codilia.com",
