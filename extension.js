@@ -91,6 +91,8 @@ class Extension {
 		icons[UPower.DeviceKind.KEYBOARD] = { icon: 'input-keyboard-symbolic' };
 		icons[UPower.DeviceKind.GAMING_INPUT] = { icon: 'input-gaming-symbolic' };
 		icons[UPower.DeviceKind.TOUCHPAD] = { icon: 'input-touchpad-symbolic' };
+		icons[UPower.DeviceKind.HEADSET] = { icon: 'audio-headphones-symbolic' };
+		icons[UPower.DeviceKind.HEADPHONES] = { icon: 'audio-headphones-symbolic' };
 		const devices = [];
 		const upowerClient = UPower.Client.new_full(null);
 		const udevices = upowerClient.get_devices();
