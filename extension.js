@@ -1,10 +1,9 @@
-const ExtensionUtils = imports.misc.extensionUtils;
-const GLib = imports.gi.GLib;
-const Main = imports.ui.main;
-const MainLoop = imports.mainloop;
-const Me = ExtensionUtils.getCurrentExtension();
-const { IndicatorController } = Me.imports.indicator;
-const { Gio, UPowerGlib: UPower } = imports.gi;
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Indicator from './indicator.js';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import UPowerGlib from 'gi://UPowerGlib';
+import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 const xml = '<node>\
    <interface name="org.freedesktop.UPower.Device">\
       <property name="Type" type="u" access="read" />\
@@ -19,20 +18,18 @@ const xml = '<node>\
 const PowerManagerProxy = Gio.DBusProxy.makeProxyWrapper(xml);
 const BUS_NAME = 'org.freedesktop.UPower';
 
-const Gettext = imports.gettext.domain(Me.metadata['gettext-domain']);
-const _ = Gettext.gettext;
 
 var Log = function (msg) {
-	if (false) {
-		log('[upower-battery] ' + msg);
+	if (true) {
+		console.log('[upower-battery] ' + msg);
 	}
 }
 
 var LogError = function (msg) {
-	log('[upower-battery] ' + msg);
+	console.log('[upower-battery] ' + msg);
 }
 
-class Extension {
+export default class UpowerBatteryExtension {
 	constructor(uuid) {
 		this._uuid = uuid;
 		const proxy = new PowerManagerProxy(
@@ -44,7 +41,7 @@ class Extension {
 
 	enable() {
 		Log('Enable');
-		this._indicator = new IndicatorController();
+		this._indicator = new Indicator.Indicator();
 		this._proxies = {};
 		Main.panel.addToStatusArea(this._uuid, this._indicator, 3, 'right');
 
@@ -58,13 +55,16 @@ class Extension {
 			Log('Device removed')
 			this._refresh();
 		});
-		this._once = MainLoop.timeout_add(10, () => {
-			this._refresh();
-			return false;
+		this._once = GLib.timeout_add(
+			GLib.PRIORITY_DEFAULT, 10, 
+			() => {
+			  this._refresh();
+			  return false;
 		});
 	}
 
 	_refresh() {
+		Log('Refresh')
 		const devices = this._findDevices();
 		devices.forEach((device, index) => {
 			try {
@@ -87,20 +87,20 @@ class Extension {
 	_findDevices() {
 		Log('Finding devices');
 		const icons = {};
-		icons[UPower.DeviceKind.MOUSE] = { icon: 'input-mouse-symbolic' };
-		icons[UPower.DeviceKind.KEYBOARD] = { icon: 'input-keyboard-symbolic' };
-		icons[UPower.DeviceKind.GAMING_INPUT] = { icon: 'input-gaming-symbolic' };
-		icons[UPower.DeviceKind.TOUCHPAD] = { icon: 'input-touchpad-symbolic' };
-		icons[UPower.DeviceKind.HEADSET] = { icon: 'audio-headphones-symbolic' };
-		icons[UPower.DeviceKind.HEADPHONES] = { icon: 'audio-headphones-symbolic' };
+		icons[UPowerGlib.DeviceKind.MOUSE] = { icon: 'input-mouse-symbolic' };
+		icons[UPowerGlib.DeviceKind.KEYBOARD] = { icon: 'input-keyboard-symbolic' };
+		icons[UPowerGlib.DeviceKind.GAMING_INPUT] = { icon: 'input-gaming-symbolic' };
+		icons[UPowerGlib.DeviceKind.TOUCHPAD] = { icon: 'input-touchpad-symbolic' };
+		icons[UPowerGlib.DeviceKind.HEADSET] = { icon: 'audio-headphones-symbolic' };
+		icons[UPowerGlib.DeviceKind.HEADPHONES] = { icon: 'audio-headphones-symbolic' };
 		const devices = [];
-		const upowerClient = UPower.Client.new_full(null);
+		const upowerClient = UPowerGlib.Client.new_full(null);
 		const udevices = upowerClient.get_devices();
 		const newProxies = {}
 		for (let i = 0; i < udevices.length; i++) {
 			const udevice = udevices[i];
 			if (udevice.kind in icons) {
-				if (udevice.state != UPower.DeviceState.UNKNOWN || udevice.native_path.includes("bluez")) {
+				if (udevice.state != UPowerGlib.DeviceState.UNKNOWN || udevice.native_path.includes("bluez")) {
 					const icon = icons[udevice.kind];
 					Log('Found device: ' + icon.icon + ' | ' + udevice.native_path);
 					devices.push({
@@ -140,12 +140,12 @@ class Extension {
 			this._indicator = null;
 		}
 		if (this._once) {
-			MainLoop.source_remove(this._once);
+			GLib.Source.remove(this._once);
 			this._once = null;
 		}
 	}
 }
 
 function init(meta) {
-	return new Extension(meta.uuid);
+	return new UpowerBatteryExtension(meta.uuid);
 }

@@ -1,8 +1,10 @@
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const { GObject, St, Clutter } = imports.gi;
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import St from 'gi://St';
+import GObject from 'gi://GObject';
+import Clutter from 'gi://Clutter';
 
-var IndicatorController = GObject.registerClass(
+export const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
         _init() {
             super._init(0.0, _('UPower Battery Indicator'));
