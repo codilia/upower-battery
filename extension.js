@@ -30,8 +30,7 @@ var LogError = function (msg) {
 }
 
 export default class UpowerBatteryExtension {
-	constructor(uuid) {
-		this._uuid = uuid;
+	constructor() {
 		const proxy = new PowerManagerProxy(
 			Gio.DBus.system,
 			BUS_NAME,
@@ -43,7 +42,7 @@ export default class UpowerBatteryExtension {
 		Log('Enable');
 		this._indicator = new Indicator.Indicator();
 		this._proxies = {};
-		Main.panel.addToStatusArea(this._uuid, this._indicator, 3, 'right');
+		Main.panel.addToStatusArea('upowerBattery', this._indicator, 3, 'right');
 
 		var iname = 'org.freedesktop.UPower';
 		var sender = 'org.freedesktop.UPower';
