@@ -3,9 +3,6 @@
   "gettext-domain": "upower_battery_indicator",
   "name": "UPower Battery",
   "shell-version": [
-    "42",
-    "43",
-    "44",
     "45"
   ],
   "url": "https://github.com/codilia/upower-battery",
