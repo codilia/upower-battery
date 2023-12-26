@@ -47,7 +47,7 @@ export const Indicator = GObject.registerClass(
                 devices.forEach((device, index) => {
                     const box = this._getBox(device, index);
                     this._container.add_child(box);
-                    this._menuItems[index] = new PopupMenu.PopupMenuItem(device.name);
+                    this._menuItems[index] = new PopupMenu.PopupImageMenuItem(device.name, device.icon);
                     this.menu.addMenuItem(this._menuItems[index]);
                 });
             }
