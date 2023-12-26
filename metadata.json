@@ -7,5 +7,6 @@
   ],
   "url": "https://github.com/codilia/upower-battery",
   "uuid": "upower-battery@codilia.com",
+  "settings-schema": "org.gnome.shell.extensions.upower-battery",
   "version": 11
 }

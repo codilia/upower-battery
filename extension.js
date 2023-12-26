@@ -3,7 +3,7 @@ import * as Indicator from './indicator.js';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import UPowerGlib from 'gi://UPowerGlib';
-import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 const xml = '<node>\
    <interface name="org.freedesktop.UPower.Device">\
       <property name="Type" type="u" access="read" />\
@@ -29,20 +29,20 @@ var LogError = function (msg) {
 	console.log('[upower-battery] ' + msg);
 }
 
-export default class UpowerBatteryExtension {
-	constructor() {
-		const proxy = new PowerManagerProxy(
+export default class UpowerBatteryExtension extends Extension {
+	enable() {
+		Log('Enable');
+		this._proxy = new PowerManagerProxy(
 			Gio.DBus.system,
 			BUS_NAME,
 			'/org/freedesktop/UPower');
-		this._dbusCon = proxy.get_connection();
-	}
+		this._dbusCon = this._proxy.get_connection();
 
-	enable() {
-		Log('Enable');
+		this._settings = this.getSettings();
 		this._indicator = new Indicator.Indicator();
 		this._proxies = {};
-		Main.panel.addToStatusArea('upowerBattery', this._indicator, 3, 'right');
+		this._positionInPanelChangedLocked = false;
+		this._panelIndexPositionChanged(true);
 
 		var iname = 'org.freedesktop.UPower';
 		var sender = 'org.freedesktop.UPower';
@@ -60,7 +60,37 @@ export default class UpowerBatteryExtension {
 			  this._refresh();
 			  return false;
 		});
+        this._settings.connectObject(
+            'changed::panel-index', () => {
+                if(!this._positionInPanelChangedLocked)
+                    this._panelIndexPositionChanged(false);
+            },
+            'changed::panel-position', () => {
+                this._panelIndexPositionChanged(true);
+            },
+            this
+        );
 	}
+
+    _panelIndexPositionChanged(positionChanged){
+        this._positionInPanelChangedLocked = true;
+		const position = this._settings.get_string('panel-position');
+		const index = this._settings.get_int('panel-index');
+		let panelBox = Main.panel._rightBox;
+		if(position === 'left')
+		    panelBox = Main.panel._leftBox;
+		else if(position === 'center')
+		    panelBox = Main.panel._centerBox;
+		positionChanged && this._settings.set_int('max-index', panelBox.get_children().length);
+		const parent = this._indicator.get_parent()
+		if(parent) {
+		    parent.remove_actor(this._indicator);
+		    panelBox.insert_child_at_index(this._indicator, index);
+		} else {
+		    Main.panel.addToStatusArea('upowerBattery', this._indicator, index, position);
+		}
+        this._positionInPanelChangedLocked = false;
+    }
 
 	_refresh() {
 		Log('Refresh')
@@ -142,9 +172,7 @@ export default class UpowerBatteryExtension {
 			GLib.Source.remove(this._once);
 			this._once = null;
 		}
+		this._settings.disconnectObject(this);
 	}
 }
 
-function init(meta) {
-	return new UpowerBatteryExtension(meta.uuid);
-}

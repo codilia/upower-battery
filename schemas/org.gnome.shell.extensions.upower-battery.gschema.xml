@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="upower_battery_indicator">
+    <enum id="org.gnome.shell.extensions.upower-battery.position">
+        <value value="0" nick="left" />
+        <value value="1" nick="center" />
+        <value value="2" nick="right" />
+    </enum>
+    <schema id="org.gnome.shell.extensions.upower-battery" path="/org/gnome/shell/extensions/upower-battery/">
+        <key name="panel-position" enum="org.gnome.shell.extensions.upower-battery.position">
+            <default>"right"</default>
+            <summary>panel position</summary>
+        </key>
+        <key type="i" name="panel-index">
+            <default>0</default>
+            <summary>panel index</summary>
+        </key>
+        <key type="i" name="max-index">
+            <default>1</default>
+            <summary>max index</summary>
+        </key>
+    </schema>
+</schemalist>
