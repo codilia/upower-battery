@@ -92,6 +92,7 @@ export default class UpowerBatteryExtension {
 		icons[UPowerGlib.DeviceKind.TOUCHPAD] = { icon: 'input-touchpad-symbolic' };
 		icons[UPowerGlib.DeviceKind.HEADSET] = { icon: 'audio-headphones-symbolic' };
 		icons[UPowerGlib.DeviceKind.HEADPHONES] = { icon: 'audio-headphones-symbolic' };
+		icons[UPowerGlib.DeviceKind.BLUETOOTH_GENERIC] = { icon: 'bluetooth-symbolic' };
 		const devices = [];
 		const upowerClient = UPowerGlib.Client.new_full(null);
 		const udevices = upowerClient.get_devices();
