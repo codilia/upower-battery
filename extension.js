@@ -90,7 +90,7 @@ export default class UpowerBatteryExtension {
 		icons[UPowerGlib.DeviceKind.KEYBOARD] = { icon: 'input-keyboard-symbolic' };
 		icons[UPowerGlib.DeviceKind.GAMING_INPUT] = { icon: 'input-gaming-symbolic' };
 		icons[UPowerGlib.DeviceKind.TOUCHPAD] = { icon: 'input-touchpad-symbolic' };
-		icons[UPowerGlib.DeviceKind.HEADSET] = { icon: 'audio-headphones-symbolic' };
+		icons[UPowerGlib.DeviceKind.HEADSET] = { icon: 'audio-headset-symbolic' };
 		icons[UPowerGlib.DeviceKind.HEADPHONES] = { icon: 'audio-headphones-symbolic' };
 		icons[UPowerGlib.DeviceKind.BLUETOOTH_GENERIC] = { icon: 'bluetooth-symbolic' };
 		const devices = [];
