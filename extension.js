@@ -93,6 +93,7 @@ export default class UpowerBatteryExtension {
 		icons[UPowerGlib.DeviceKind.HEADSET] = { icon: 'audio-headset-symbolic' };
 		icons[UPowerGlib.DeviceKind.HEADPHONES] = { icon: 'audio-headphones-symbolic' };
 		icons[UPowerGlib.DeviceKind.BLUETOOTH_GENERIC] = { icon: 'bluetooth-symbolic' };
+		icons[UPowerGlib.DeviceKind.PHONE] = { icon: 'smartphone-symbolic' };
 		const devices = [];
 		const upowerClient = UPowerGlib.Client.new_full(null);
 		const udevices = upowerClient.get_devices();
