@@ -78,9 +78,6 @@ export default class UpowerBatteryExtension {
 	_update() {
 		const devices = this._findDevices();
 		this._indicator.refresh(devices);
-		devices.forEach((device, index) => {
-			this._indicator.setLabel(device.name, device.udevice.percentage, index);
-		});
 	}
 
 	_findDevices() {
@@ -109,6 +106,7 @@ export default class UpowerBatteryExtension {
 						path: udevice.native_path,
 						icon: icon.icon,
 						udevice: udevice,
+						percentage: udevice.percentage,
 					});
 				}
 				if (udevice.native_path in this._proxies) {
