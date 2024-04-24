@@ -19,46 +19,41 @@ export const Indicator = GObject.registerClass(
             const devicesSettings = devices.map(({ native_path, icon }) => ({ native_path, icon }));
 
             if (JSON.stringify(devicesSettings) !== JSON.stringify(this._prevDevicesSettings)) {
-                this._container.remove_all_children();
                 this.menu.removeAll();
                 this._menuItems = [];
                 this._icons = [];
                 this._labels = [];
-                this._addBoxes(devices);
+                this._createBoxes(devices);
             }
             this._prevDevicesSettings = devicesSettings;
+            devices.forEach((device, index) => {
+                const label = device.percentage + '%';
+                if (this._labels[index]) {
+                    this._labels[index].text = (label || '').trim();
+                }
+                if (this._menuItems[index]) {
+                    this._menuItems[index].label.set_text(device.name + ': ' + label);
+                }
+            });
+    
         }
 
-        setLabel(name, percent, index) {
-            const label = percent + '%';
-            if (this._labels[index]) {
-                this._labels[index].text = (label || '').trim();
-            }
-            if (this._menuItems[index]) {
-                this._menuItems[index].label.set_text(name + ': ' + label);
-            }
-        }
-
-        _addBoxes(devices) {
-            if (!devices.length) {
-                const box = this._getBox({}, 0);
+        _createBoxes(devices) {
+            this._container.remove_all_children();
+            devices.forEach((device, index) => {
+                const box = this._createBox(device, index);
                 this._container.add_child(box);
-            } else {
-                devices.forEach((device, index) => {
-                    const box = this._getBox(device, index);
-                    this._container.add_child(box);
-                    this._menuItems[index] = new PopupMenu.PopupImageMenuItem(device.name, device.icon);
-                    this.menu.addMenuItem(this._menuItems[index]);
-                });
-            }
+                this._menuItems[index] = new PopupMenu.PopupImageMenuItem(device.name, device.icon);
+                this.menu.addMenuItem(this._menuItems[index]);
+            });
             this.add_child(this._container);
         }
 
-        _getBox(device, index) {
+        _createBox(device, index) {
             const box = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
 
-            this._icons[index] = this._getBoxIcon(device);
-            this._labels[index] = this._getBoxLabel();
+            this._icons[index] = this._createBoxIcon(device);
+            this._labels[index] = this._createBoxLabel();
 
             box.add_child(this._icons[index]);
             box.add_child(this._labels[index]);
@@ -66,7 +61,7 @@ export const Indicator = GObject.registerClass(
             return box;
         }
 
-        _getBoxLabel() {
+        _createBoxLabel() {
             const label = new St.Label({
                 y_align: Clutter.ActorAlign.CENTER,
                 x_align: Clutter.ActorAlign.START,
@@ -76,7 +71,7 @@ export const Indicator = GObject.registerClass(
             return label;
         }
 
-        _getBoxIcon(device) {
+        _createBoxIcon(device) {
             return new St.Icon({
                 icon_name: device.icon || 'battery-full-symbolic',
                 style_class: 'system-status-icon upower-battery-icon',
