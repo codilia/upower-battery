@@ -35,7 +35,7 @@ export const Indicator = GObject.registerClass(
                     this._menuItems[index].label.set_text(device.name + ': ' + label);
                 }
             });
-            this.actor.visible = devices.length > 0;
+            this.visible = devices.length > 0;
         }
 
         _createBoxes(devices) {
