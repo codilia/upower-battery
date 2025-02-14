@@ -29,8 +29,9 @@ var LogError = function (msg) {
 	console.log('[upower-battery] ' + msg);
 }
 
-export default class UpowerBatteryExtension {
-	constructor() {
+export default class UpowerBatteryExtension extends Extension {
+	constructor(metadata) {
+		super(metadata);
 		const proxy = new PowerManagerProxy(
 			Gio.DBus.system,
 			BUS_NAME,
@@ -77,7 +78,7 @@ export default class UpowerBatteryExtension {
 
 	_update() {
 		const devices = this._findDevices();
-		this._indicator.refresh(devices);
+		this._indicator.refresh(devices, this);
 	}
 
 	_findDevices() {
@@ -126,7 +127,7 @@ export default class UpowerBatteryExtension {
 			}
 		}
 		this._proxies = newProxies;
-		devices.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : ((a.native_path > b.native_path) ? 1 : -1)));
+		devices.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : ((a.path > b.path) ? 1 : -1)));
 		return devices;
 	}
 
