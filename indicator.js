@@ -15,15 +15,15 @@ export const Indicator = GObject.registerClass(
             this._prevDevicesSettings = [];
         }
 
-        refresh(devices) {
-            const devicesSettings = devices.map(({ native_path, icon }) => ({ native_path, icon }));
+        refresh(devices, extension) {
+            const devicesSettings = devices.map(({ path, icon }) => ({ path, icon }));
 
             if (JSON.stringify(devicesSettings) !== JSON.stringify(this._prevDevicesSettings)) {
                 this.menu.removeAll();
                 this._menuItems = [];
                 this._icons = [];
                 this._labels = [];
-                this._createBoxes(devices);
+                this._createBoxes(devices, extension);
             }
             this._prevDevicesSettings = devicesSettings;
             devices.forEach((device, index) => {
@@ -38,13 +38,32 @@ export const Indicator = GObject.registerClass(
             this.visible = devices.length > 0;
         }
 
-        _createBoxes(devices) {
+        _createBoxes(devices, extension) {
             this._container.remove_all_children();
             devices.forEach((device, index) => {
+                const key = device.path + device.name;
+                const indicator = this;
                 const box = this._createBox(device, index);
+                const item = new PopupMenu.PopupImageMenuItem(device.name, device.icon);
+                const hiddenDevices = extension.getSettings().get_strv('hidden-devices');
+                const hidden = hiddenDevices.includes(key);
+                item.setOrnament(hidden ? PopupMenu.Ornament.NONE : PopupMenu.Ornament.CHECK);
+                box.visible = !hidden;
+                item.connect('activate', () => {
+                    var hiddenDevices = extension.getSettings().get_strv('hidden-devices');
+                    var hidden = !hiddenDevices.includes(key);
+                    if (hidden) {
+                        hiddenDevices.push(key);
+                    } else {
+                        hiddenDevices = hiddenDevices.filter((v) => v !== key);
+                    }
+                    extension.getSettings().set_strv('hidden-devices', hiddenDevices);
+                    item.setOrnament(hidden ? PopupMenu.Ornament.NONE : PopupMenu.Ornament.CHECK);
+                    box.visible = !hidden;
+                });
                 this._container.add_child(box);
-                this._menuItems[index] = new PopupMenu.PopupImageMenuItem(device.name, device.icon);
-                this.menu.addMenuItem(this._menuItems[index]);
+                this._menuItems[index] = item;
+                this.menu.addMenuItem(item);
             });
             this.add_child(this._container);
         }

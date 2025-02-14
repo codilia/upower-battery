@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.upower-battery" path="/org/gnome/shell/extensions/upower-battery/">
+    <key name="hidden-devices" type="as">
+        <default><![CDATA[[]]]></default>
+        <summary>Devices to be hidden from the indicator panel</summary>
+    </key>
+  </schema>
+</schemalist>
