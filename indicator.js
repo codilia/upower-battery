@@ -42,12 +42,11 @@ export const Indicator = GObject.registerClass(
             this._container.remove_all_children();
             devices.forEach((device, index) => {
                 const key = device.path + device.name;
-                const indicator = this;
                 const box = this._createBox(device, index);
                 const item = new PopupMenu.PopupImageMenuItem(device.name, device.icon);
                 const hiddenDevices = extension.getSettings().get_strv('hidden-devices');
                 const hidden = hiddenDevices.includes(key);
-                item.setOrnament(hidden ? PopupMenu.Ornament.NONE : PopupMenu.Ornament.CHECK);
+                this._setChecked(item, !hidden);
                 box.visible = !hidden;
                 item.connect('activate', () => {
                     var hiddenDevices = extension.getSettings().get_strv('hidden-devices');
@@ -58,7 +57,7 @@ export const Indicator = GObject.registerClass(
                         hiddenDevices = hiddenDevices.filter((v) => v !== key);
                     }
                     extension.getSettings().set_strv('hidden-devices', hiddenDevices);
-                    item.setOrnament(hidden ? PopupMenu.Ornament.NONE : PopupMenu.Ornament.CHECK);
+                    this._setChecked(item, !hidden);
                     box.visible = !hidden;
                 });
                 this._container.add_child(box);
@@ -66,6 +65,20 @@ export const Indicator = GObject.registerClass(
                 this.menu.addMenuItem(item);
             });
             this.add_child(this._container);
+        }
+
+        _setChecked(item, checked) {
+            if (!item._checkIcon) {
+                item._checkIcon = new St.Icon({
+                    icon_name: 'object-select-symbolic',
+                    y_align: Clutter.ActorAlign.CENTER,
+                    style_class: 'popup-menu-icon upower-battery-check',
+                });
+                item.insert_child_at_index(item._checkIcon, 0);
+            }
+            // Toggle opacity instead of visibility so the icon always
+            // reserves its space and the labels stay aligned.
+            item._checkIcon.opacity = checked ? 255 : 0;
         }
 
         _createBox(device, index) {
