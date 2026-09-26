@@ -27,12 +27,13 @@ export const Indicator = GObject.registerClass(
             }
             this._prevDevicesSettings = devicesSettings;
             devices.forEach((device, index) => {
-                const label = device.percentage + '%';
+                const label = `${device.percentage}%`;
                 if (this._labels[index]) {
-                    this._labels[index].text = (label || '').trim();
+                    this._labels[index].text = label;
                 }
                 if (this._menuItems[index]) {
-                    this._menuItems[index].label.set_text(device.name + ': ' + label);
+                    this._menuItems[index].label.set_text(device.name);
+                    this._menuItems[index].percentageLabel.set_text(label);
                 }
             });
             this.visible = devices.length > 0;
@@ -42,9 +43,16 @@ export const Indicator = GObject.registerClass(
             this._container.remove_all_children();
             devices.forEach((device, index) => {
                 const key = device.path + device.name;
-                const indicator = this;
                 const box = this._createBox(device, index);
                 const item = new PopupMenu.PopupImageMenuItem(device.name, device.icon);
+                item.label.x_expand = true;
+                item.percentageLabel = new St.Label({
+                    text: `${device.percentage}%`,
+                    y_align: Clutter.ActorAlign.CENTER,
+                    x_align: Clutter.ActorAlign.END,
+                });
+                item.add_child(item.percentageLabel);
+                item.set_child_above_sibling(item.percentageLabel, item.label);
                 const hiddenDevices = extension.getSettings().get_strv('hidden-devices');
                 const hidden = hiddenDevices.includes(key);
                 item.setOrnament(hidden ? PopupMenu.Ornament.NONE : PopupMenu.Ornament.CHECK);
