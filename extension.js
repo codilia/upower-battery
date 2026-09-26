@@ -58,6 +58,7 @@ export default class UpowerBatteryExtension extends Extension {
 		this._once = GLib.timeout_add(
 			GLib.PRIORITY_DEFAULT, 10, 
 			() => {
+			  this._once = null;
 			  this._refresh();
 			  return false;
 		});
@@ -134,8 +135,8 @@ export default class UpowerBatteryExtension extends Extension {
 
 	disable() {
 		Log('Disable');
-		this._dbusCon.signal_unsubscribe(this._indicator.subIdAdd);
-		this._dbusCon.signal_unsubscribe(this._indicator.subIdRem);
+		this._dbusCon.signal_unsubscribe(this.subIdAdd);
+		this._dbusCon.signal_unsubscribe(this.subIdRem);
 		this._proxies = {};
 		if (this._indicator) {
 			this._indicator.destroy();
