@@ -120,12 +120,17 @@ export default class UpowerBatteryExtension extends Extension {
 						BUS_NAME,
 						udevice.get_object_path()
 					);
-					proxy.connect('g-properties-changed', () => {
+					const propertyChangedId = proxy.connect('g-properties-changed', () => {
 						Log('Property changed for ' + udevice.model);
 						this._update();
 					});
-					newProxies[udevice.native_path] = proxy;
+					newProxies[udevice.native_path] = { proxy, propertyChangedId };
 				}
+			}
+		}
+		for (const [path, entry] of Object.entries(this._proxies)) {
+			if (!(path in newProxies)) {
+				entry.proxy.disconnect(entry.propertyChangedId);
 			}
 		}
 		this._proxies = newProxies;
@@ -133,11 +138,18 @@ export default class UpowerBatteryExtension extends Extension {
 		return devices;
 	}
 
+	_disconnectProxies() {
+		for (const { proxy, propertyChangedId } of Object.values(this._proxies ?? {})) {
+			proxy.disconnect(propertyChangedId);
+		}
+		this._proxies = {};
+	}
+
 	disable() {
 		Log('Disable');
-		this._dbusCon.signal_unsubscribe(this.subIdAdd);
-		this._dbusCon.signal_unsubscribe(this.subIdRem);
-		this._proxies = {};
+		this._dbusCon.signal_unsubscribe(this._subIdAdd);
+		this._dbusCon.signal_unsubscribe(this._subIdRem);
+		this._disconnectProxies();
 		if (this._indicator) {
 			this._indicator.destroy();
 			this._indicator = null;
