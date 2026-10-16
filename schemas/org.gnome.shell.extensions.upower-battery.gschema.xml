@@ -5,5 +5,10 @@
         <default><![CDATA[[]]]></default>
         <summary>Devices to be hidden from the indicator panel</summary>
     </key>
+    <key name="highlight-low-battery" type="b">
+        <default>true</default>
+        <summary>Highlight low battery icons</summary>
+        <description>Show the icons of devices with 15% battery or less in red.</description>
+    </key>
   </schema>
 </schemalist>
