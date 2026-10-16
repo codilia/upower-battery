@@ -41,7 +41,7 @@ export default class UpowerBatteryExtension extends Extension {
 
 	enable() {
 		Log('Enable');
-		this._indicator = new Indicator.Indicator();
+		this._indicator = new Indicator.Indicator(this);
 		this._proxies = {};
 		Main.panel.addToStatusArea('upowerBattery', this._indicator, 3, 'right');
 
@@ -79,7 +79,7 @@ export default class UpowerBatteryExtension extends Extension {
 
 	_update() {
 		const devices = this._findDevices();
-		this._indicator.refresh(devices, this);
+		this._indicator.refresh(devices);
 	}
 
 	_findDevices() {
