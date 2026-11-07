@@ -100,7 +100,7 @@ export const Indicator = GObject.registerClass(
         _addHighlightLowOption() {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             const enabled = this._settings.get_boolean('highlight-low-battery');
-            const item = new PopupMenu.PopupMenuItem(_('Highlight low battery in red'));
+            const item = new PopupMenu.PopupMenuItem(_('Highlight low battery'));
             item.set_child_above_sibling(item.get_child_at_index(0), item.label);
             item.setOrnament(enabled ? PopupMenu.Ornament.CHECK : PopupMenu.Ornament.NONE);
             item.connect('activate', () => {
